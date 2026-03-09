@@ -21,6 +21,7 @@ document.addEventListener('alpine:init', () => {
     workerStats: [],
     liveFeed: [],
     _activityChart: null,
+    _prevEngramCount: 0,
     _prevVaultCount: 0,
 
     // Memories
@@ -518,6 +519,13 @@ document.addEventListener('alpine:init', () => {
 
     _handleLiveMessage(msg) {
       if (msg.type === 'stats_update') {
+        const newCount = msg.data.engramCount || 0;
+
+        // Count-diff: if engrams increased, fetch newest as live feed entry
+        if (this._prevEngramCount > 0 && newCount > this._prevEngramCount) {
+          this._fetchNewestEngram();
+        }
+
         // Vault count-diff: refresh vault list when a vault is added or removed.
         // Guard with > 0 on first message (learn current count without triggering a reload).
         const newVaultCount = msg.data.vaultCount || 0;
