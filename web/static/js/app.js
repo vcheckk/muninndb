@@ -1170,13 +1170,18 @@ document.addEventListener('alpine:init', () => {
         const nodesToRender = filteredEngrams.length > 0 ? filteredEngrams : engrams;
 
         // Build node elements
+        const labelMode = this.graphLabelMode;
         const nodeElements = nodesToRender.map(e => {
           const fullLabel = e.concept || e.id.slice(0, 8);
+          const shortLabel = fullLabel.length > 20 ? fullLabel.slice(0, 18) + '…' : fullLabel;
+          const displayLabel = labelMode === 'full' ? fullLabel
+                             : labelMode === 'short' ? shortLabel : '';
           return {
             data: {
               id: e.id,
               label: fullLabel,
-              shortLabel: fullLabel.length > 20 ? fullLabel.slice(0, 18) + '…' : fullLabel,
+              shortLabel: shortLabel,
+              displayLabel: displayLabel,
               size: connectedNodeIds.has(e.id) ? 20 + (e.confidence || 0.5) * 20 : 12,
               color: !connectedNodeIds.has(e.id) ? '#64748b'
                    : (e.confidence || 0) > 0.7 ? '#06b6d4'
@@ -1201,7 +1206,7 @@ document.addEventListener('alpine:init', () => {
                 'background-color': 'data(color)',
                 'width': 'data(size)',
                 'height': 'data(size)',
-                'label': 'data(label)',
+                'label': 'data(displayLabel)',
                 'color': '#e2e8f0',
                 'font-size': '11px',
                 'text-valign': 'bottom',
@@ -1321,7 +1326,7 @@ document.addEventListener('alpine:init', () => {
         const lbl = mode === 'full' ? node.data('label')
                   : mode === 'short' ? node.data('shortLabel')
                   : '';
-        node.style('label', lbl);
+        node.data('displayLabel', lbl);
       });
     },
 
