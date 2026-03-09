@@ -525,6 +525,7 @@ document.addEventListener('alpine:init', () => {
         if (this._prevEngramCount > 0 && newCount > this._prevEngramCount) {
           this._fetchNewestEngram();
         }
+        this._prevEngramCount = newCount;
 
         // Vault count-diff: refresh vault list when a vault is added or removed.
         // Guard with > 0 on first message (learn current count without triggering a reload).
